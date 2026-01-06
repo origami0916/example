@@ -11,11 +11,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- GSAP (Animation) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lucide Icons (Fixed URL) -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -47,21 +42,20 @@
         body {
             font-feature-settings: "palt";
             color: #334155;
-            overflow-x: hidden;
+            overflow-x: hidden; /* 横揺れ防止 */
         }
         
-        /* Custom UI Elements */
+        /* Glass Effect */
         .glass-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
         
         .gradient-text {
@@ -70,37 +64,40 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* FAQ Accordion */
-        .faq-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
-        }
-        .faq-item.active .faq-content {
-            max-height: 500px;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
+        /* CSS Only Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Floating CTA */
-        .floating-cta {
-            transform: translateY(100px);
-            transition: transform 0.4s ease;
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
         }
-        .floating-cta.visible {
-            transform: translateY(0);
+
+        .animate-fade-in {
+            opacity: 0; /* 初期状態は非表示 */
+            animation: fadeInUp 0.8s ease-out forwards;
         }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
         
-        /* Hero Text Shadow for readability over image */
-        .text-shadow-hero {
-            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        .animate-ping-slow {
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
 
-        /* Nav Link Hover Effect */
-        .nav-link {
-            position: relative;
-        }
+        /* Nav Link Hover */
+        .nav-link { position: relative; }
         .nav-link::after {
             content: '';
             position: absolute;
@@ -111,128 +108,128 @@
             background-color: #F97316;
             transition: width 0.3s ease;
         }
-        .nav-link:hover::after {
-            width: 100%;
+        .nav-link:hover::after { width: 100%; }
+
+        /* Floating CTA Visibility - Mobile */
+        .floating-cta {
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
         }
     </style>
 </head>
 <body class="bg-brand-bg antialiased">
 
-    <!-- Navbar (Redesigned) -->
-    <nav class="fixed top-0 w-full z-50 glass-header transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass-header">
+        <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
             <!-- Logo -->
             <a href="#" class="group flex items-center gap-2">
-                <span class="font-eng font-extrabold text-2xl tracking-tighter text-brand-navy group-hover:opacity-80 transition-opacity">
+                <span class="font-eng font-extrabold text-xl md:text-2xl tracking-tighter text-brand-navy">
                     ARTICLE<span class="text-brand-orange">.PRO</span>
                 </span>
             </a>
             
-            <!-- Navigation -->
-            <div class="hidden md:flex items-center gap-10 text-sm font-bold text-slate-600 font-sans tracking-wide">
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600 font-sans tracking-wide">
                 <a href="#problem" class="nav-link hover:text-brand-navy transition-colors">課題</a>
                 <a href="#service" class="nav-link hover:text-brand-navy transition-colors">サービス</a>
                 <a href="#pricing" class="nav-link hover:text-brand-navy transition-colors">料金プラン</a>
                 <a href="#flow" class="nav-link hover:text-brand-navy transition-colors">納品フロー</a>
             </div>
 
-            <!-- CTA Button (Solid Style) -->
-            <a href="#contact" class="hidden md:flex items-center gap-2 bg-brand-navy text-white px-6 py-3 rounded-lg text-sm font-bold shadow-lg hover:bg-brand-orange hover:shadow-orange-500/30 transition-all duration-300 transform hover:-translate-y-0.5">
-                <i data-lucide="mail" class="w-4 h-4"></i>
+            <!-- Desktop CTA -->
+            <a href="#contact" class="hidden md:flex items-center gap-2 bg-brand-navy text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-lg hover:bg-brand-orange transition-all duration-300 transform hover:-translate-y-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 無料相談はこちら
             </a>
         </div>
     </nav>
 
-    <!-- FV Section (Updated Image Name) -->
-    <header class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <!-- Background Image with Overlay -->
+    <!-- FV Section -->
+    <header class="relative h-[100dvh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <!-- Background Image -->
         <div class="absolute inset-0 z-0">
-            <!-- 画像の明度を落とすオーバーレイ -->
             <div class="absolute inset-0 bg-brand-navy/60 z-10 mix-blend-multiply"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-brand-navy/90 via-transparent to-brand-navy/30 z-10"></div>
-            
-            <!-- 背景画像 (Updated Name to .jpg) -->
-            <img src="./images/fv1.jpg" alt="Background" class="w-full h-full object-cover scale-105" onerror="this.src='https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop'">
+            <img src="./images/fv1.jpg" alt="Background" class="w-full h-full object-cover object-center scale-105" onerror="this.src='https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop'">
         </div>
 
-        <div class="relative z-20 max-w-5xl mx-auto px-6 text-center text-white">
-            
-            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.2] tracking-tight mb-8 reveal-up text-shadow-hero">
+        <div class="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-6 text-center text-white mt-10">
+            <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight mb-6 md:mb-8 animate-fade-in drop-shadow-lg">
                 「速く作る」だけではない。<br>
-                <span class="text-brand-orange">使える原稿</span>を、<br class="hidden md:block">
+                <span class="text-brand-orange">使える原稿</span>を、<br class="hidden sm:block">
                 あなたのメディアに。
             </h1>
             
-            <p class="text-lg md:text-xl text-slate-200 leading-relaxed mb-12 max-w-2xl mx-auto font-medium reveal-up delay-100 text-shadow-hero">
+            <p class="text-base sm:text-lg md:text-xl text-slate-100 leading-relaxed mb-10 max-w-xl mx-auto font-medium animate-fade-in delay-100 drop-shadow-md">
                 企画・構成・執筆・校正までフル対応。<br>
                 法人対応（請求書／NDA）で安心してご依頼いただけます。
             </p>
 
-            <!-- Single CTA Button with Animation -->
-            <div class="flex flex-col items-center reveal-up delay-200">
-                <a href="#contact" class="group relative inline-flex items-center justify-center gap-3 bg-brand-orange text-white px-12 py-6 rounded-full text-xl font-bold transition-all duration-300 hover:bg-orange-600 hover:scale-105 shadow-glow hover:shadow-[0_0_60px_rgba(249,115,22,0.6)]">
-                    <span class="absolute inset-0 rounded-full border border-white/30 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-30"></span>
+            <!-- CTA Button -->
+            <div class="flex flex-col items-center animate-fade-in delay-200">
+                <a href="#contact" class="group relative inline-flex items-center justify-center gap-3 bg-brand-orange text-white px-8 py-4 md:px-12 md:py-6 rounded-full text-lg md:text-xl font-bold transition-all duration-300 hover:bg-orange-600 hover:scale-105 shadow-glow">
+                    <span class="absolute inset-0 rounded-full border border-white/30 animate-ping-slow opacity-30"></span>
                     無料で相談する
-                    <i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
-                <p class="mt-5 text-sm text-slate-300 font-medium">費用感と納期を確認 / 営業電話なし</p>
+                <p class="mt-4 text-xs md:text-sm text-slate-300 font-medium">費用感と納期を確認 / 営業電話なし</p>
             </div>
         </div>
 
         <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-white/50 z-20">
-            <i data-lucide="chevron-down" class="w-10 h-10"></i>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/50 z-20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </div>
     </header>
 
     <!-- Pain Points -->
-    <section id="problem" class="py-24 bg-white relative">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center max-w-3xl mx-auto mb-20 reveal-up">
-                <span class="text-brand-orange font-bold tracking-wider text-xs uppercase mb-4 block">Pain Points</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-brand-navy leading-tight">
+    <section id="problem" class="py-16 md:py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-20 animate-fade-in">
+                <span class="text-brand-orange font-bold tracking-wider text-xs uppercase mb-3 block">Pain Points</span>
+                <h2 class="text-2xl md:text-4xl font-bold text-brand-navy leading-tight">
                     記事制作、<br>こんなことで止まっていませんか？
                 </h2>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 reveal-stagger">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Item 1 -->
-                <div class="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-blue/30 hover:shadow-hover transition-all duration-300">
-                    <div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center text-brand-blue shadow-sm mb-6 group-hover:scale-110 transition-transform">
-                        <i data-lucide="users" class="w-7 h-7"></i>
+                <div class="p-6 md:p-8 rounded-2xl bg-slate-50 border border-slate-100 animate-fade-in delay-100">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-brand-blue shadow-sm mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
-                    <h3 class="font-bold text-brand-navy text-lg mb-3">リソース不足</h3>
+                    <h3 class="font-bold text-brand-navy text-lg mb-2">リソース不足</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">記事を増やしたいが、社内リソースが足りず更新が止まっている。</p>
                 </div>
                 <!-- Item 2 -->
-                <div class="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-blue/30 hover:shadow-hover transition-all duration-300">
-                    <div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center text-brand-orange shadow-sm mb-6 group-hover:scale-110 transition-transform">
-                        <i data-lucide="alert-circle" class="w-7 h-7"></i>
+                <div class="p-6 md:p-8 rounded-2xl bg-slate-50 border border-slate-100 animate-fade-in delay-100">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-brand-orange shadow-sm mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
                     </div>
-                    <h3 class="font-bold text-brand-navy text-lg mb-3">品質が不安定</h3>
+                    <h3 class="font-bold text-brand-navy text-lg mb-2">品質が不安定</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">外注は高い・遅い・品質が安定せず、結局社内で書き直している。</p>
                 </div>
                 <!-- Item 3 -->
-                <div class="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-blue/30 hover:shadow-hover transition-all duration-300">
-                    <div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center text-brand-navy shadow-sm mb-6 group-hover:scale-110 transition-transform">
-                        <i data-lucide="file-edit" class="w-7 h-7"></i>
+                <div class="p-6 md:p-8 rounded-2xl bg-slate-50 border border-slate-100 animate-fade-in delay-100">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-brand-navy shadow-sm mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-5.5"/><polyline points="14 2 14 8 20 8"/><path d="M10.42 12.61a2.1 2.1 0 1 1 2.97 2.97L7.95 21 4 22l.99-3.95 5.43-5.44Z"/></svg>
                     </div>
-                    <h3 class="font-bold text-brand-navy text-lg mb-3">大きな手戻り</h3>
+                    <h3 class="font-bold text-brand-navy text-lg mb-2">大きな手戻り</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">構成案が弱く、納品後にコンセプトのズレなどの大きな修正が出る。</p>
                 </div>
                 <!-- Item 4 -->
-                <div class="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-blue/30 hover:shadow-hover transition-all duration-300">
-                    <div class="w-14 h-14 rounded-xl bg-white flex items-center justify-center text-green-600 shadow-sm mb-6 group-hover:scale-110 transition-transform">
-                        <i data-lucide="trending-up" class="w-7 h-7"></i>
+                <div class="p-6 md:p-8 rounded-2xl bg-slate-50 border border-slate-100 animate-fade-in delay-100">
+                    <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-green-600 shadow-sm mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                     </div>
-                    <h3 class="font-bold text-brand-navy text-lg mb-3">改善が後回し</h3>
+                    <h3 class="font-bold text-brand-navy text-lg mb-2">改善が後回し</h3>
                     <p class="text-sm text-slate-500 leading-relaxed">公開後の改善（リライト）まで手が回らず、過去記事が放置状態。</p>
                 </div>
             </div>
 
-            <div class="mt-20 text-center reveal-up">
-                <div class="inline-block bg-brand-navy text-white px-8 py-4 rounded-full text-lg font-medium shadow-xl">
+            <div class="mt-12 md:mt-20 text-center animate-fade-in">
+                <div class="inline-block bg-brand-navy text-white px-6 py-4 md:px-8 md:py-4 rounded-full text-base md:text-lg font-medium shadow-xl">
                     当サービスは、「速く作る」だけでなく<br class="md:hidden">
                     <span class="text-brand-orange font-bold">“使える原稿”</span>の納品を約束します。
                 </div>
@@ -241,17 +238,17 @@
     </section>
 
     <!-- Solution -->
-    <section id="service" class="py-24 bg-brand-navy text-white relative overflow-hidden">
+    <section id="service" class="py-16 md:py-24 bg-brand-navy text-white relative overflow-hidden">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
         
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="reveal-up">
-                    <h2 class="text-3xl md:text-5xl font-bold leading-tight mb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+                <div class="animate-fade-in">
+                    <h2 class="text-2xl md:text-5xl font-bold leading-tight mb-6 md:mb-8">
                         企画〜公開後の改善まで、<br>
                         ワンストップで支援。
                     </h2>
-                    <p class="text-slate-400 text-lg leading-relaxed mb-8">
+                    <p class="text-slate-400 text-base md:text-lg leading-relaxed mb-6 md:mb-8">
                         記事制作は「執筆」だけでは終わりません。狙うべきテーマ整理、構成設計、表記ルール、公開後の改善まで含めて初めて成果に近づきます。
                     </p>
                     <div class="border-l-4 border-brand-orange pl-6 py-1">
@@ -262,9 +259,9 @@
                     </div>
                 </div>
 
-                <div class="glass-panel bg-white/5 border-white/10 rounded-3xl p-8 md:p-10 reveal-scale">
-                    <h3 class="font-bold text-xl mb-8 flex items-center gap-3">
-                        <i data-lucide="layers" class="text-brand-orange"></i>
+                <div class="glass-panel bg-white/5 border-white/10 rounded-3xl p-6 md:p-10 animate-fade-in delay-100">
+                    <h3 class="font-bold text-lg md:text-xl mb-6 md:mb-8 flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
                         対応範囲（基本プラン内）
                     </h3>
                     <ul class="space-y-6">
@@ -303,71 +300,71 @@
     </section>
 
     <!-- USP -->
-    <section class="py-24 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center max-w-3xl mx-auto mb-20 reveal-up">
-                <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-6">
+    <section class="py-16 md:py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-20 animate-fade-in">
+                <h2 class="text-2xl md:text-4xl font-bold text-brand-navy mb-4 md:mb-6">
                     安い・速いだけで終わらせない。<br>
                     継続発注しやすい運用設計
                 </h2>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8 mb-20 reveal-stagger">
+            <div class="grid md:grid-cols-3 gap-6 md:gap-8 mb-16 md:mb-20">
                 <!-- Card 1 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group">
-                    <div class="h-48 overflow-hidden">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group animate-fade-in delay-100">
+                    <div class="h-40 md:h-48 overflow-hidden">
                         <img src="./images/feature_01.png" alt="構成確定" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=800&auto=format&fit=crop'">
                     </div>
-                    <div class="p-8">
-                        <h3 class="font-bold text-xl text-brand-navy mb-4">構成を先に確定</h3>
+                    <div class="p-6 md:p-8">
+                        <h3 class="font-bold text-lg md:text-xl text-brand-navy mb-4">構成を先に確定</h3>
                         <p class="text-sm text-slate-500 leading-relaxed">執筆前に骨子を合意することで、初稿後に「想像と違った」という大崩れを防ぎます。</p>
                     </div>
                 </div>
                 <!-- Card 2 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group">
-                    <div class="h-48 overflow-hidden">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group animate-fade-in delay-100">
+                    <div class="h-40 md:h-48 overflow-hidden">
                         <img src="./images/feature_02.png" alt="編集チェック" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800&auto=format&fit=crop'">
                     </div>
-                    <div class="p-8">
-                        <h3 class="font-bold text-xl text-brand-navy mb-4">編集チェック工程を固定</h3>
+                    <div class="p-6 md:p-8">
+                        <h3 class="font-bold text-lg md:text-xl text-brand-navy mb-4">編集チェック工程を固定</h3>
                         <p class="text-sm text-slate-500 leading-relaxed">ライターに丸投げせず、独自のチェックシートに基づき品質のブレを最小化します。</p>
                     </div>
                 </div>
                 <!-- Card 3 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group">
-                    <div class="h-48 overflow-hidden">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group animate-fade-in delay-100">
+                    <div class="h-40 md:h-48 overflow-hidden">
                         <img src="./images/feature_03.png" alt="修正ルール" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1606857521015-7f9fcf423740?q=80&w=800&auto=format&fit=crop'">
                     </div>
-                    <div class="p-8">
-                        <h3 class="font-bold text-xl text-brand-navy mb-4">修正ルールを明文化</h3>
+                    <div class="p-6 md:p-8">
+                        <h3 class="font-bold text-lg md:text-xl text-brand-navy mb-4">修正ルールを明文化</h3>
                         <p class="text-sm text-slate-500 leading-relaxed">何がOKで何がNGかを明確に定義。プロジェクト進行中の「言った言わない」を排除します。</p>
                     </div>
                 </div>
             </div>
 
             <!-- Quality Check -->
-            <div class="bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-glass reveal-up">
-                <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="bg-white rounded-3xl p-6 md:p-12 border border-slate-100 shadow-glass animate-fade-in">
+                <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                     <div>
-                        <h3 class="text-2xl font-bold text-brand-navy mb-6">
+                        <h3 class="text-xl md:text-2xl font-bold text-brand-navy mb-6">
                             品質は「才能」ではなく<br>
                             「工程」で担保します。
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="check-circle-2" class="text-green-500 w-5 h-5"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                                 <span class="text-slate-700">誤字脱字／表記ゆれの徹底排除</span>
                             </div>
                             <div class="flex items-center gap-3">
-                                <i data-lucide="check-circle-2" class="text-green-500 w-5 h-5"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                                 <span class="text-slate-700">冗長・重複表現を削り読みやすく</span>
                             </div>
                             <div class="flex items-center gap-3">
-                                <i data-lucide="check-circle-2" class="text-green-500 w-5 h-5"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                                 <span class="text-slate-700">見出しと本文の論理整合性</span>
                             </div>
                             <div class="flex items-center gap-3">
-                                <i data-lucide="check-circle-2" class="text-green-500 w-5 h-5"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                                 <span class="text-slate-700">読者の次アクション（CTA）の明確化</span>
                             </div>
                         </div>
@@ -382,32 +379,32 @@
     </section>
 
     <!-- Pricing -->
-    <section id="pricing" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16 reveal-up">
+    <section id="pricing" class="py-16 md:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12 md:mb-16 animate-fade-in">
                 <span class="text-brand-orange font-bold tracking-wider text-xs uppercase mb-4 block">Pricing</span>
-                <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-6">明快な料金プラン</h2>
+                <h2 class="text-2xl md:text-4xl font-bold text-brand-navy mb-6">明快な料金プラン</h2>
                 <p class="text-slate-500">初期費用0円。必要なのは制作費のみです。</p>
             </div>
 
-            <div class="grid lg:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto reveal-stagger">
+            <div class="grid lg:grid-cols-3 gap-6 md:gap-8 items-stretch max-w-6xl mx-auto">
                 <!-- Light -->
-                <div class="p-8 rounded-3xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col">
+                <div class="p-6 md:p-8 rounded-3xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col animate-fade-in delay-100">
                     <div class="mb-6">
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Light</span>
-                        <h3 class="text-xl font-bold text-brand-navy mt-2">ライトプラン</h3>
+                        <h3 class="text-lg md:text-xl font-bold text-brand-navy mt-2">ライトプラン</h3>
                         <p class="text-xs text-slate-500 mt-1">〜2,000字 / 本</p>
                     </div>
-                    <div class="text-4xl font-eng font-bold text-brand-navy mb-8">
+                    <div class="text-3xl md:text-4xl font-eng font-bold text-brand-navy mb-8">
                         <span class="text-lg font-normal align-top">¥</span>20,000<span class="text-sm font-normal text-slate-400">〜</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow">
                         <li class="text-sm text-slate-600 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-blue flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             構成 / 執筆 / 校正
                         </li>
                         <li class="text-sm text-slate-600 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-blue flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             軽微修正 対応
                         </li>
                     </ul>
@@ -417,29 +414,29 @@
                 </div>
 
                 <!-- Standard (Popular) -->
-                <div class="p-8 rounded-3xl bg-brand-navy text-white shadow-xl relative transform lg:-translate-y-4 flex flex-col">
+                <div class="p-6 md:p-8 rounded-3xl bg-brand-navy text-white shadow-xl relative transform lg:-translate-y-4 flex flex-col animate-fade-in delay-100">
                     <div class="absolute top-0 right-0 bg-brand-orange text-white text-xs font-bold px-4 py-2 rounded-bl-2xl rounded-tr-2xl">
                         POPULAR
                     </div>
                     <div class="mb-6">
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Standard</span>
-                        <h3 class="text-xl font-bold mt-2">スタンダード</h3>
+                        <h3 class="text-lg md:text-xl font-bold mt-2">スタンダード</h3>
                         <p class="text-xs text-slate-400 mt-1">〜4,000字 / 本</p>
                     </div>
-                    <div class="text-4xl font-eng font-bold mb-8">
+                    <div class="text-3xl md:text-4xl font-eng font-bold mb-8">
                         <span class="text-lg font-normal align-top">¥</span>45,000<span class="text-sm font-normal text-slate-400">〜</span>
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow">
                         <li class="text-sm text-slate-200 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-orange flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             <span class="font-bold">ライトプランの全工程</span>
                         </li>
                         <li class="text-sm text-slate-200 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-orange flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             内部導線提案（CTA等）
                         </li>
                         <li class="text-sm text-slate-200 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-orange flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             SEOキーワード活用助言
                         </li>
                     </ul>
@@ -449,26 +446,26 @@
                 </div>
 
                 <!-- Enterprise -->
-                <div class="p-8 rounded-3xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col">
+                <div class="p-6 md:p-8 rounded-3xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col animate-fade-in delay-100">
                     <div class="mb-6">
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Enterprise</span>
-                        <h3 class="text-xl font-bold text-brand-navy mt-2">継続・量産</h3>
+                        <h3 class="text-lg md:text-xl font-bold text-brand-navy mt-2">継続・量産</h3>
                         <p class="text-xs text-slate-500 mt-1">月◯本〜 / 定期発注</p>
                     </div>
-                    <div class="text-4xl font-eng font-bold text-brand-navy mb-8">
+                    <div class="text-3xl md:text-4xl font-eng font-bold text-brand-navy mb-8">
                         Custom
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow">
                         <li class="text-sm text-slate-600 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-blue flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             ボリュームディスカウント
                         </li>
                         <li class="text-sm text-slate-600 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-blue flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             公開後リライト（条件有）
                         </li>
                         <li class="text-sm text-slate-600 flex gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-brand-blue flex-shrink-0"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                             専任ディレクター
                         </li>
                     </ul>
@@ -481,11 +478,11 @@
     </section>
 
     <!-- Flow & Delivery -->
-    <section id="flow" class="py-24 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid lg:grid-cols-2 gap-20">
-                <div class="reveal-up">
-                    <h2 class="text-3xl font-bold text-brand-navy mb-2">納期目安</h2>
+    <section id="flow" class="py-16 md:py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="grid lg:grid-cols-2 gap-12 md:gap-20">
+                <div class="animate-fade-in">
+                    <h2 class="text-2xl md:text-3xl font-bold text-brand-navy mb-2">納期目安</h2>
                     <p class="text-sm text-slate-500 mb-8">※ヒアリング完了日を起算日とします</p>
                     
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-4">
@@ -507,8 +504,8 @@
                     </p>
                 </div>
 
-                <div class="reveal-up">
-                    <h2 class="text-3xl font-bold text-brand-navy mb-10">ご依頼の流れ</h2>
+                <div class="animate-fade-in delay-100">
+                    <h2 class="text-2xl md:text-3xl font-bold text-brand-navy mb-10">ご依頼の流れ</h2>
                     <div class="relative space-y-8 pl-8 border-l-2 border-slate-200">
                         <!-- Step 1 -->
                         <div class="relative">
@@ -541,47 +538,47 @@
     </section>
 
     <!-- Consultation Offer -->
-    <section class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="bg-brand-navy rounded-[3rem] p-10 md:p-20 text-white reveal-scale overflow-hidden relative shadow-2xl">
+    <section class="py-16 md:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <div class="bg-brand-navy rounded-[2rem] md:rounded-[3rem] p-8 md:p-20 text-white animate-fade-in overflow-hidden relative shadow-2xl">
                 <!-- Decoration -->
                 <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-blue rounded-full filter blur-[100px] opacity-20 translate-x-1/2 -translate-y-1/2"></div>
                 
                 <div class="relative z-10 max-w-2xl">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-10">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-8 md:mb-10">
                         無料相談で<br>
                         「次にやるべきこと」が明確になります
                     </h2>
                     
-                    <div class="grid sm:grid-cols-2 gap-y-6 gap-x-10 mb-12">
+                    <div class="grid sm:grid-cols-2 gap-y-6 gap-x-10 mb-10 md:mb-12">
                         <div class="flex gap-4 items-start">
-                            <i data-lucide="check-square" class="text-brand-orange w-5 h-5 flex-shrink-0 mt-1"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0 mt-1"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                             <span class="text-sm font-medium">目的に合う記事タイプの整理<br><span class="text-xs text-slate-400">（集客／比較／指名等）</span></span>
                         </div>
                         <div class="flex gap-4 items-start">
-                            <i data-lucide="check-square" class="text-brand-orange w-5 h-5 flex-shrink-0 mt-1"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0 mt-1"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                             <span class="text-sm font-medium">まず作るべき「3本」のテーマ案</span>
                         </div>
                         <div class="flex gap-4 items-start">
-                            <i data-lucide="check-square" class="text-brand-orange w-5 h-5 flex-shrink-0 mt-1"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0 mt-1"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                             <span class="text-sm font-medium">1本分の構成たたき台（簡易）</span>
                         </div>
                         <div class="flex gap-4 items-start">
-                            <i data-lucide="check-square" class="text-brand-orange w-5 h-5 flex-shrink-0 mt-1"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-orange flex-shrink-0 mt-1"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                             <span class="text-sm font-medium">概算費用と最短納期の提示</span>
                         </div>
                     </div>
 
-                    <a href="#contact" class="inline-flex items-center gap-3 bg-brand-orange text-white px-10 py-5 rounded-xl text-lg font-bold hover:bg-orange-600 transition-all shadow-lg hover:shadow-orange-500/30 transform hover:-translate-y-1">
+                    <a href="#contact" class="inline-flex items-center gap-3 bg-brand-orange text-white px-8 py-5 md:px-10 rounded-xl text-lg font-bold hover:bg-orange-600 transition-all shadow-lg hover:shadow-orange-500/30 transform hover:-translate-y-1">
                         無料で相談する
-                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
                     <p class="text-xs text-slate-400 mt-4 ml-2">※営業電話は一切行いません</p>
                 </div>
             </div>
 
             <!-- Trust Badges -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 max-w-4xl mx-auto text-center reveal-up">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mt-12 md:mt-16 max-w-4xl mx-auto text-center animate-fade-in">
                 <div class="p-4">
                     <div class="font-bold text-brand-navy mb-1">請求書払い</div>
                     <div class="text-xs text-slate-500">柔軟に対応可能</div>
@@ -603,68 +600,59 @@
     </section>
 
     <!-- FAQ -->
-    <section class="py-24 bg-slate-50">
-        <div class="max-w-3xl mx-auto px-6">
-            <h2 class="text-center text-3xl font-bold text-brand-navy mb-16 reveal-up">よくある質問</h2>
-            <div class="space-y-4 reveal-stagger">
+    <section class="py-16 md:py-24 bg-slate-50">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+            <h2 class="text-center text-2xl md:text-3xl font-bold text-brand-navy mb-12 md:mb-16 animate-fade-in">よくある質問</h2>
+            <div class="space-y-4 animate-fade-in delay-100">
                 <!-- Item -->
-                <div class="faq-item bg-white rounded-2xl p-6 shadow-sm border border-slate-100 cursor-pointer hover:border-brand-blue/30 transition-colors">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-brand-navy pr-4">Q. 修正は何回まで？</h3>
-                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-brand-navy pr-4 text-base md:text-lg">Q. 修正は何回まで？</h3>
                     </div>
-                    <div class="faq-content">
-                        <p class="pt-4 text-sm text-slate-600 leading-relaxed border-t border-slate-100 mt-4">
-                            A. 軽微修正［◯回］までが基本です。軽微修正とは、誤字脱字・表現の微調整・言い回し変更などを指します。構成の大幅変更や追加要件は別途ご相談となります。
-                        </p>
+                    <div class="text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                        A. 軽微修正［◯回］までが基本です。軽微修正とは、誤字脱字・表現の微調整・言い回し変更などを指します。構成の大幅変更や追加要件は別途ご相談となります。
                     </div>
                 </div>
                 <!-- Item -->
-                <div class="faq-item bg-white rounded-2xl p-6 shadow-sm border border-slate-100 cursor-pointer hover:border-brand-blue/30 transition-colors">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-brand-navy pr-4">Q. “丸投げ”でも大丈夫？</h3>
-                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-brand-navy pr-4 text-base md:text-lg">Q. “丸投げ”でも大丈夫？</h3>
                     </div>
-                    <div class="faq-content">
-                        <p class="pt-4 text-sm text-slate-600 leading-relaxed border-t border-slate-100 mt-4">
-                            A. 可能です。最低限「目的」「ターゲット」「参考URL」があれば、質問テンプレでこちらから整理します。
-                        </p>
+                    <div class="text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                        A. 可能です。最低限「目的」「ターゲット」「参考URL」があれば、質問テンプレでこちらから整理します。
                     </div>
                 </div>
                 <!-- Item -->
-                <div class="faq-item bg-white rounded-2xl p-6 shadow-sm border border-slate-100 cursor-pointer hover:border-brand-blue/30 transition-colors">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-brand-navy pr-4">Q. 専門性が高い領域でも対応できますか？</h3>
-                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-brand-navy pr-4 text-base md:text-lg">Q. 専門性が高い領域でも対応できますか？</h3>
                     </div>
-                    <div class="faq-content">
-                        <p class="pt-4 text-sm text-slate-600 leading-relaxed border-t border-slate-100 mt-4">
-                            A. 内容により可能です。監修が必要な場合は体制・範囲をご相談のうえ進行します。
-                        </p>
+                    <div class="text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                        A. 内容により可能です。監修が必要な場合は体制・範囲をご相談のうえ進行します。
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact Form (Replace with CTA Button) -->
-    <section id="contact" class="py-24 bg-white relative overflow-hidden">
-        <div class="max-w-4xl mx-auto px-6 relative z-10">
-            <div class="text-center mb-12 reveal-up">
-                <h2 class="text-3xl md:text-5xl font-bold text-brand-navy mb-6">
+    <!-- Contact CTA (Replaces Form) -->
+    <section id="contact" class="py-16 md:py-24 bg-white relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="text-center mb-10 md:mb-12 animate-fade-in">
+                <h2 class="text-2xl md:text-5xl font-bold text-brand-navy mb-4 md:mb-6">
                     まずは無料相談で、<br>
                     費用感と進め方を整理しませんか
                 </h2>
                 <p class="text-slate-500">検討段階でも問題ありません。最小のプランからご提案します。</p>
             </div>
 
-            <!-- CTA Button Area (Replaces Form) -->
-            <div class="reveal-up text-center">
-                <a href="#" class="inline-flex items-center gap-3 bg-brand-orange text-white px-16 py-6 rounded-full text-xl font-bold hover:bg-orange-600 transition-all shadow-glow hover:shadow-[0_0_60px_rgba(249,115,22,0.6)] transform hover:-translate-y-1">
+            <!-- CTA Button Area -->
+            <div class="animate-fade-in text-center">
+                <a href="mailto:sample@example.com" class="inline-flex items-center gap-3 bg-brand-orange text-white px-10 py-5 md:px-16 md:py-6 rounded-full text-lg md:text-xl font-bold hover:bg-orange-600 transition-all shadow-glow hover:shadow-[0_0_60px_rgba(249,115,22,0.6)] transform hover:-translate-y-1">
                     無料で相談する
-                    <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </a>
-                <p class="mt-6 text-sm text-slate-400">
+                <p class="mt-4 md:mt-6 text-xs md:text-sm text-slate-400">
                     ※営業電話は一切行いません。<br>
                     ボタンをクリックするとメーラーが起動します。
                 </p>
@@ -672,16 +660,16 @@
         </div>
         
          <!-- Background Decoration -->
-         <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-3xl -z-10 translate-y-1/2 translate-x-1/4"></div>
-         <div class="absolute top-0 left-0 w-[300px] h-[300px] bg-brand-orange/5 rounded-full blur-3xl -z-10 -translate-y-1/2 -translate-x-1/4"></div>
+         <div class="absolute bottom-0 right-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-brand-blue/5 rounded-full blur-3xl -z-10 translate-y-1/2 translate-x-1/4"></div>
+         <div class="absolute top-0 left-0 w-[200px] h-[200px] md:w-[300px] md:h-[300px] bg-brand-orange/5 rounded-full blur-3xl -z-10 -translate-y-1/2 -translate-x-1/4"></div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-brand-navy text-white pt-20 pb-10 border-t border-white/5">
+    <footer class="bg-brand-navy text-white pt-16 pb-8 md:pt-20 md:pb-10 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-12 mb-16">
+            <div class="grid md:grid-cols-4 gap-10 md:gap-12 mb-12 md:mb-16">
                 <div class="col-span-1 md:col-span-2">
-                    <div class="text-2xl font-eng font-bold tracking-tight mb-6">
+                    <div class="text-2xl font-eng font-bold tracking-tight mb-4 md:mb-6">
                         ARTICLE<span class="text-brand-orange">.PRO</span>
                     </div>
                     <p class="text-sm text-slate-400 leading-relaxed max-w-sm">
@@ -690,7 +678,7 @@
                     </p>
                 </div>
                 <div>
-                    <div class="text-xs font-bold text-slate-500 mb-6">SERVICE</div>
+                    <div class="text-xs font-bold text-slate-500 mb-4 md:mb-6">SERVICE</div>
                     <ul class="space-y-3 text-sm text-slate-300">
                         <li><a href="#problem" class="hover:text-white transition-colors">お悩み解決</a></li>
                         <li><a href="#flow" class="hover:text-white transition-colors">制作フロー</a></li>
@@ -698,7 +686,7 @@
                     </ul>
                 </div>
                 <div>
-                    <div class="text-xs font-bold text-slate-500 mb-6">COMPANY</div>
+                    <div class="text-xs font-bold text-slate-500 mb-4 md:mb-6">COMPANY</div>
                     <ul class="space-y-3 text-sm text-slate-300">
                         <li><a href="#" class="hover:text-white transition-colors">運営者情報</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">プライバシーポリシー</a></li>
@@ -715,91 +703,10 @@
     <!-- Mobile Floating CTA -->
     <div class="fixed bottom-6 right-6 z-50 md:hidden floating-cta">
         <a href="#contact" class="bg-brand-orange text-white px-6 py-4 rounded-full font-bold shadow-2xl flex items-center gap-2 hover:bg-orange-600 transition-colors">
-            <i data-lucide="mail" class="w-5 h-5"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             無料相談
         </a>
     </div>
 
-    <!-- Scripts -->
-    <script>
-        // Init Icons
-        lucide.createIcons();
-
-        // GSAP Config
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Simple Fade Up
-        document.querySelectorAll('.reveal-up').forEach((el) => {
-            gsap.from(el, {
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                },
-                y: 40,
-                opacity: 0,
-                duration: 1,
-                ease: 'power3.out'
-            });
-        });
-
-        // Scale Up
-        document.querySelectorAll('.reveal-scale').forEach((el) => {
-            gsap.from(el, {
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                },
-                scale: 0.95,
-                opacity: 0,
-                duration: 1.2,
-                ease: 'power3.out'
-            });
-        });
-
-        // Stagger Animation (Lists/Grids)
-        document.querySelectorAll('.reveal-stagger').forEach((el) => {
-            gsap.from(el.children, {
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                },
-                y: 30,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: 'power3.out'
-            });
-        });
-
-        // FAQ Toggle
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const isActive = item.classList.contains('active');
-                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-                if (!isActive) item.classList.add('active');
-            });
-        });
-
-        // Floating CTA Visibility
-        const floatingCta = document.querySelector('.floating-cta');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 500) {
-                floatingCta.classList.add('visible');
-            } else {
-                floatingCta.classList.remove('visible');
-            }
-        });
-
-        // Smooth Scroll for Anchors
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if(target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-    </script>
 </body>
 </html>
